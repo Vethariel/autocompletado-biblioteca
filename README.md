@@ -73,3 +73,113 @@ let l1 = new Libro("El Aleph", "Borges");
 let l2 = new Libro("Rayuela", "Cortázar");
 console.log(Libro.cuantosLibros());  // 2
 ```
+## 3. Herencia
+
+Puedes heredar de otra clase usando extends y llamar al constructor de la clase padre con super().
+
+```js
+class MaterialBiblioteca {
+  constructor(id) {
+    this.id = id;
+  }
+}
+
+class Libro extends MaterialBiblioteca {
+  constructor(id, titulo, autor) {
+    super(id);                     // Llama al constructor de la clase padre
+    this.titulo = titulo;
+    this.autor = autor;
+  }
+
+  getInfo() {
+    return `[${this.id}] ${this.titulo}, de ${this.autor}`;
+  }
+}
+
+let libro = new Libro(1, "Ficciones", "Borges");
+console.log(libro.getInfo()); // [1] Ficciones, de Borges
+```
+
+
+## 4. Métodos y atributos privados (opcional, ES2022+)
+
+Desde versiones modernas puedes usar # para atributos y métodos privados.
+
+```js
+class Libro {
+  #notasSecretas = "No compartir";   // Privado
+
+  verNotas() {
+    return this.#notasSecretas;
+  }
+}
+
+let libro = new Libro();
+console.log(libro.verNotas());    // "No compartir"
+// console.log(libro.#notasSecretas); // Error: es privado
+```
+
+## 5. Ejemplo de clase para estructuras de datos
+
+Por ejemplo, para un nodo de Trie:
+
+```js
+class TrieNode {
+  constructor() {
+    this.hijos = {};    // Diccionario: letra -> TrieNode
+    this.esFin = false;
+    this.contador = 0;  // Frecuencia de la palabra
+  }
+}
+
+class Trie {
+  constructor() {
+    this.raiz = new TrieNode();
+  }
+
+  insertar(palabra) {
+    let nodo = this.raiz;
+    for (let letra of palabra) {
+      if (!nodo.hijos[letra]) {
+        nodo.hijos[letra] = new TrieNode();
+      }
+      nodo = nodo.hijos[letra];
+    }
+    nodo.esFin = true;
+    nodo.contador += 1;
+  }
+}
+```
+
+## 6. Diferencias clave con otros lenguajes
+
+- El constructor se llama siempre `constructor`.
+- No se declaran tipos de variables (JavaScript es dinámico).
+- Se usa `this.` para acceder a atributos y métodos.
+- Los métodos se definen dentro del bloque de la clase, sin la palabra clave `function`.
+- No existen "interfaces" o "clases abstractas" formales (puedes simularlas).
+- Métodos/atributos privados usan `#` (requieren entornos modernos).
+
+
+## 7. Exportar e importar clases entre archivos
+
+Para organizar tu proyecto modularmente:
+
+En el archivo de la clase (por ejemplo, Trie.js):
+
+```js
+export class Trie {
+  // ... implementación ...
+}
+```
+
+```js
+import { Trie } from './structures/Trie.js';
+
+const miTrie = new Trie();
+```
+
+## 8. Recursos útiles
+
+- [MDN - Classes in JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Classes)
+- [Tutorial básico de clases JS (en español)](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Working_with_Objects#Definici%C3%B3n_de_clases)
