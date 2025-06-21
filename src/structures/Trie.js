@@ -1,7 +1,7 @@
 class TrieNode {
   constructor() {
     this.hijos = {}; 
-    this.esFinPalabra = false; 
+    this.esFinPalabra = false; // importante para saber si un prefijo s una palabra completa
     this.contador = 0;  // Frecuencia de la palabra
   }
 }
@@ -24,7 +24,7 @@ class Trie {
         }
         nodoActual = nodoActual.hijos[caracter]; // se mueve al nodo hijo correspondiente
         }
-        nodoActual.esFinPalabra = true; // marca el final de la palabra para que se enceuntre en caso de existir una palabra compuesta
+        nodoActual.esFinPalabra = true; // marca el final de la palabra para que se encuentre en caso de existir una palabra compuesta
     }
 
     buscar(palabra) {
@@ -36,5 +36,28 @@ class Trie {
             nodoActual = nodoActual.hijos[caracter]; // se mueve al nodo hijo correspondiente
         }
         return nodoActual.esFinPalabra; // Retorna true si es una palabra completa
+    }
+
+    comienzaCon(prefijo) {
+        let nodoActual = this.raiz;
+        for (const caracter of prefijo) {
+            if (!nodoActual.hijos[caracter]) {
+                return []; // Si no existe el prefijo, retorna un array vacío
+            }
+            nodoActual = nodoActual.hijos[caracter]; // se mueve al nodo hijo correspondiente
+        }
+        return this.buscarPalabrasDesde(nodoActual, prefijo); // Busca todas las palabras que comienzan con el prefijo
+    }
+
+    buscarPalabrasDesde(nodo, prefijo) {
+        const palabras = [];
+        if (nodo.esFinPalabra) {
+            palabras.push(prefijo); // Si es una palabra completa, la agrega
+        }
+        for (const caracter in nodo.hijos) {
+            palabras.push(...this.buscarPalabrasDesde(nodo.hijos[caracter], prefijo + caracter)); // Busca recursivamente en los hijos
+            //NOTA: el operador ... (spread) se usa para concatenar los arrays de palabras, en vez de agregar valores individuales
+        }
+        return palabras; 
     }
 }
