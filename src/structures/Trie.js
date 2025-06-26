@@ -60,4 +60,30 @@ class Trie {
         }
         return palabras; 
     }
+
+    borrar(palabra) {
+        if (!this.buscar(palabra)) {
+            return false; // Si la palabra no existe, no se puede eliminar
+        }
+        this.borrarDesde(this.raiz, palabra, 0);
+    }
+
+    borrarDesde(nodo, palabra, indice) {
+        if (indice === palabra.length) {
+            nodo.esFinPalabra = false; // Marca el final de la palabra como falso
+            return Object.keys(nodo.hijos).length === 0; // Retorna true si no hay hijos
+        }
+        const caracter = palabra[indice];
+        const hijo = nodo.hijos[caracter];
+        if (!hijo) {
+            return false; // La palabra no existe
+        }
+        const debeBorrarHijo = this.borrarDesde(hijo, palabra, indice + 1); //Lamada recursiva para borrar el hijo
+        if (debeBorrarHijo) {
+            delete nodo.hijos[caracter]; // Elimina el hijo
+            return Object.keys(nodo.hijos).length === 0; // Retorna true si no hay hijos
+        }
+        return false;
+    }
+
 }
