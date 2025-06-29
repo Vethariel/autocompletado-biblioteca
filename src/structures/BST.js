@@ -76,4 +76,17 @@ class BST {
         }
         return nodo;
     }
+
+    encontrarMinimo(nodo) {
+        while (nodo.izquierda !== null) {
+            nodo = nodo.izquierda; // Recorre hacia la izquierda hasta encontrar el mínimo
+        }
+        return nodo;
+    }
+
+    enRango(prefijo){
+        const resultado = [];
+        this.enRangoRecursivo(this.raiz, prefijo, resultado);
+        return resultado;
+    }
 }
