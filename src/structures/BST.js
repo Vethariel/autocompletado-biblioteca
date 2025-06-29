@@ -84,9 +84,24 @@ class BST {
         return nodo;
     }
 
-    enRango(prefijo){
+    buscarPorPrefijo(prefijo){
         const resultado = [];
-        this.enRangoRecursivo(this.raiz, prefijo, resultado);
+        this.buscarPorPrefijoRecursivo(this.raiz, prefijo, resultado);
         return resultado;
+    }
+
+    buscarPorPrefijoRecursivo(nodo, prefijo, resultado) {
+        if (nodo === null) {
+            return;
+        }
+
+        this.buscarPorPrefijoRecursivo(nodo.izquierda, prefijo, resultado);
+
+        // Si el valor del nodo comienza con el prefijo, lo agrega al resultado
+        if (String(nodo.valor).startsWith(prefijo)) {
+            resultado.push(nodo.valor);
+        }
+
+        this.buscarPorPrefijoRecursivo(nodo.derecha, prefijo, resultado);
     }
 }
