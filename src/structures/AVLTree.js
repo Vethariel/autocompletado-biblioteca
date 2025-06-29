@@ -62,7 +62,7 @@ class AVLTree {
 
         return nodo;
     }
-    
+
     obtenerBalance(nodo) {
         if (nodo === null) {
             return 0;
@@ -93,4 +93,60 @@ class AVLTree {
     }
     // Métodos para eliminar y buscar
     
+    buscar(valor) {
+        return this.buscarRecursivo(this.raiz, valor);
+    }
+
+    buscarRecursivo(nodo, valor) {
+        if (nodo === null || nodo.valor === valor) {
+            return nodo;
+        }
+
+        if (valor < nodo.valor) {
+            return this.buscarRecursivo(nodo.izquierda, valor);
+        } else {
+            return this.buscarRecursivo(nodo.derecha, valor);
+        }
+    }
+
+    eliminar(valor) {
+        this.raiz = this.eliminarRecursivo(this.raiz, valor);
+    }
+
+    eliminarRecursivo(nodo, valor) {
+        if (nodo === null) {
+            return nodo;
+        }
+
+        if (valor < nodo.valor) {
+            nodo.izquierda = this.eliminarRecursivo(nodo.izquierda, valor);
+        } else if (valor > nodo.valor) {
+            nodo.derecha = this.eliminarRecursivo(nodo.derecha, valor);
+        } else {
+
+            // Nodo con un hijo o sin hijos
+            if (nodo.izquierda === null || nodo.derecha === null) {
+                return nodo.izquierda || nodo.derecha;
+            }
+
+            // Nodo con dos hijos, toca obtener el más pequeño del subárbol derecho
+            const sucesor = this.obtenerMinimo(nodo.derecha);
+            nodo.valor = sucesor.valor;
+            nodo.derecha = this.eliminarRecursivo(nodo.derecha, sucesor.valor);
+        }
+
+        // Actualizar la altura del nodo actual
+        nodo.altura = 1 + Math.max(nodo.izquierda ? nodo.izquierda.altura : 0, nodo.derecha ? nodo.derecha.altura : 0);
+
+        // Balancear el árbol
+        return this.balancear(nodo);
+    }
+
+    obtenerMinimo(nodo) {
+        while (nodo.izquierda !== null) {
+            nodo = nodo.izquierda;
+        }
+        return nodo;
+    }
+
 }
