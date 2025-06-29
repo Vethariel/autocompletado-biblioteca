@@ -12,5 +12,85 @@ class AVLTree {
         this.raiz = null;
     }
 
-    // Métodos para insertar, eliminar y buscar
+    insertar(valor) {
+        this.raiz = this.insertarRecursivo(this.raiz, valor);
+    }
+
+    insertarRecursivo(nodo, valor) {
+        if (nodo === null) {
+            return new AVLNode(valor);
+        }
+
+        if (valor < nodo.valor) {
+            nodo.izquierda = this.insertarRecursivo(nodo.izquierda, valor);
+        } else if (valor > nodo.valor) {
+            nodo.derecha = this.insertarRecursivo(nodo.derecha, valor);
+        } else {
+            return nodo;
+        }
+
+        nodo.altura = 1 + Math.max(nodo.izquierda.altura, nodo.derecha.altura);
+
+        // Balancear el árbol
+        return this.balancear(nodo);
+    }
+
+    balancear(nodo) {
+        const balance = this.obtenerBalance(nodo);
+
+        // Rotación RR
+        if (balance > 1 && this.obtenerBalance(nodo.izquierda) >= 0) {
+            return this.rotacionDerecha(nodo);
+        }
+
+        // Rotación LL
+        if (balance < -1 && this.obtenerBalance(nodo.derecha) <= 0) {
+            return this.rotacionIzquierda(nodo);
+        }
+
+        // Rotación LR
+        if (balance > 1 && this.obtenerBalance(nodo.izquierda) < 0) {
+            nodo.izquierda = this.rotacionIzquierda(nodo.izquierda);
+            return this.rotacionDerecha(nodo);
+        }
+
+        // Rotación RL
+        if (balance < -1 && this.obtenerBalance(nodo.derecha) > 0) {
+            nodo.derecha = this.rotacionDerecha(nodo.derecha);
+            return this.rotacionIzquierda(nodo);
+        }
+
+        return nodo;
+    }
+    
+    obtenerBalance(nodo) {
+        if (nodo === null) {
+            return 0;
+        }
+        return (nodo.izquierda ? nodo.izquierda.altura : 0) - (nodo.derecha ? nodo.derecha.altura : 0);
+    }
+
+    rotacionDerecha(nodo) {
+        const nuevoRaiz = nodo.izquierda;
+        nodo.izquierda = nuevoRaiz.derecha;
+        nuevoRaiz.derecha = nodo;
+
+        nodo.altura = 1 + Math.max(nodo.izquierda ? nodo.izquierda.altura : 0, nodo.derecha ? nodo.derecha.altura : 0);
+        nuevoRaiz.altura = 1 + Math.max(nuevoRaiz.izquierda ? nuevoRaiz.izquierda.altura : 0, nodo.altura);
+
+        return nuevoRaiz;
+    }
+
+    rotacionIzquierda(nodo) {
+        const nuevoRaiz = nodo.derecha;
+        nodo.derecha = nuevoRaiz.izquierda;
+        nuevoRaiz.izquierda = nodo;
+
+        nodo.altura = 1 + Math.max(nodo.izquierda ? nodo.izquierda.altura : 0, nodo.derecha ? nodo.derecha.altura : 0);
+        nuevoRaiz.altura = 1 + Math.max(nuevoRaiz.derecha ? nuevoRaiz.derecha.altura : 0, nodo.altura);
+
+        return nuevoRaiz;
+    }
+    // Métodos para eliminar y buscar
+    
 }
