@@ -149,4 +149,30 @@ class AVLTree {
         return nodo;
     }
 
+    // Método buscarPorPrefijo para obtener los valores con el prefijo dado
+
+    buscarPorPrefijo(prefijo) {
+        const resultado = [];
+        this.buscarPorPrefijoRecursivo(this.raiz, prefijo, resultado);
+        return resultado;
+    }
+
+    buscarPorPrefijoRecursivo(nodo, prefijo, resultado) {
+        if (nodo === null) {
+            return;
+        }
+
+        // Recorre el subárbol izquierdo
+        this.buscarPorPrefijoRecursivo(nodo.izquierda, prefijo, resultado);
+
+        // Si el valor del nodo comienza con el prefijo, lo agrega al resultado
+        if (String(nodo.valor).startsWith(prefijo)) {
+            resultado.push(nodo.valor);
+        }
+
+        // Recorre el subárbol derecho
+        this.buscarPorPrefijoRecursivo(nodo.derecha, prefijo, resultado);
+    }
+
+    
 }
