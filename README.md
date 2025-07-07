@@ -13,4 +13,4 @@ Este proyecto implementa un sistema de autocompletado de títulos de libros para
 - HashMap.js: Lookup rápido para consultas exactas.
 
 ## Créditos
-- Daniel Loy, Julian X, Daniel Gracia
+- Daniel Loy, Julian Benitez, Daniel Gracia
