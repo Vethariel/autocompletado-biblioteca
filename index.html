@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Librarian – Autocompletado de Biblioteca</title>
     <!-- Google Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">  
-<style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <style>
         :root {
             --black: #000;
             --white: #fff;
@@ -24,7 +26,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Montserrat', sans-serif !important;
             background: var(--white);
             color: var(--black);
             min-height: 100vh;
@@ -36,8 +38,8 @@
 
         /* --- Branding --- */
         #logo {
-            width: 120px;
-            margin-bottom: 1rem;
+            width: 180px;
+            margin-bottom: 0.1 rem;
         }
 
         #title {
@@ -49,6 +51,7 @@
 
         /* --- Buttons --- */
         .btn-primary {
+            font-family: 'Montserrat', sans-serif !important;
             background: var(--black);
             color: var(--white);
             border: none;
@@ -63,6 +66,7 @@
         }
 
         .btn-secondary {
+            font-family: 'Montserrat', sans-serif !important;
             position: absolute;
             top: 1.5rem;
             right: 1.5rem;
@@ -91,6 +95,7 @@
 
         /* --- Search --- */
         #search {
+            font-family: 'Montserrat', sans-serif !important;
             width: 70vw;
             max-width: 900px;
             padding: 0.9rem 1rem;
@@ -136,7 +141,9 @@
     <button id="loadBtnTop" class="btn-secondary" style="display:none">CARGAR CSV</button>
 
     <!-- Branding -->
-    <img id="logo" src="https://raw.githubusercontent.com/feathericons/feather/master/icons/book.svg" alt="Libro" />
+    <img id="logo"
+        src="https://raw.githubusercontent.com/Vethariel/autocompletado-biblioteca/refs/heads/main/pic/Book.png"
+        alt="Libro" />
     <h1 id="title">LIBRARIAN</h1>
 
     <!-- Bloque inicial: botón y barra progreso -->
