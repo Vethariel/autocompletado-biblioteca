@@ -9,81 +9,61 @@ class Trie {
   constructor() {
     this.root = new TrieNode();
   }
-  // Toca poner como minimo las funciones de insertar, buscar y eliminar
-  //tambien hay que implementar una que retorne y modifique la frecuencia de una palabra
-    
-    insertar(palabra) {
-        if (this.buscar(palabra)) {
-            this.root.children[palabra].contador++; // Si la palabra ya existe, incrementa su frecuencia
-            return; // No es necesario insertar de nuevo
-        }
-        let nodoActual = this.root;
-        for (const caracter of palabra) { //iterar la palabra
-        if (!nodoActual.children[caracter]) { 
-            nodoActual.children[caracter] = new TrieNode(); //si no existe la letra en los children, se crea
-        }
-        nodoActual = nodoActual.children[caracter]; // se mueve al nodo hijo correspondiente
-        }
-        nodoActual.endWord = true; // marca el final de la palabra para que se encuentre en caso de existir una palabra compuesta
-    }
-
-    buscar(palabra) {
-        let nodoActual = this.root;
-        for (const caracter of palabra) {
-            if (!nodoActual.children[caracter]) {
-                return false; // Si no existe el caracter, la palabra no está
+    //Insertar un token en el trie
+    // y asociarlo a un clusterId y bookId
+    insert(token, clusterId, bookId) {
+        let node = this.root;
+        for (const ch of token) {
+            if (!node.children.has(ch)) {
+                node.children.set(ch, new TrieNode());
             }
-            nodoActual = nodoActual.children[caracter]; // se mueve al nodo hijo correspondiente
+            node = node.children.get(ch);
         }
-        return nodoActual.endWord; // Retorna true si es una palabra completa
+        node.endWord = true; // Marca el final de la palabra
+        
+        // Actualiza el posting para el clusterId
+        let rec = node.posting.get(clusterId);
+        if (!rec) {
+          rec = { hits: 0, editions: [] };
+          node.posting.set(clusterId, rec);
+        }
+        rec.editions.push(bookId);
     }
 
-    comienzaCon(prefijo) {
-        let nodoActual = this.root;
-        for (const caracter of prefijo) {
-            if (!nodoActual.children[caracter]) {
-                return []; // Si no existe el prefijo, retorna un array vacío
+    // Buscar un token en el trie
+    search(token) {
+      let node= this.root;
+      for (const ch of token) {
+          if (!node.children.has(ch)) {
+              return null; // No se encontró el token
+          }
+          node = node.children.get(ch);
+      }
+      return node.endWord ? node : null; // Retorna el nodo si es una palabra completa
+    }
+
+    searchPrefix(prefix){
+
+      //Encuentra el nodo que representa el prefijo
+      let node= this.root;
+      for (const ch of prefix){
+        if (!node.children.has(ch)) return new Set(); // Si no existe el prefijo, retorna un Set vacío
+
+      // recorrer todos los nodos hijos del nodo que representa el prefijo
+        let result = new Set();
+        let stack = [node.children.get(ch)];
+
+        while (stack.length > 0) {
+            let current = stack.pop();
+            if (current.endWord) {
+
+              //agrega los clusterIds del nodo actual al resultado
+              for (const cid of current.posting.keys()) result.add(cid);
             }
-            nodoActual = nodoActual.children[caracter]; // se mueve al nodo hijo correspondiente
+            // Añadimos todos los hijos a la pila
+            for (const child of current.children.values()) stack.push(child);
         }
-        return this.buscarPalabrasDesde(nodoActual, prefijo); // Busca todas las palabras que comienzan con el prefijo
+        return result; // Retorna un Set con todos los clusterIds encontrados
+      }
     }
-
-    buscarPalabrasDesde(nodo, prefijo) {
-        const palabras = [];
-        if (nodo.endWord) {
-            palabras.push(prefijo); // Si es una palabra completa, la agrega
-        }
-        for (const caracter in nodo.children) {
-            palabras.push(...this.buscarPalabrasDesde(nodo.children[caracter], prefijo + caracter)); // Busca recursivamente en los children
-            //NOTA: el operador ... (spread) se usa para concatenar los arrays de palabras, en vez de agregar valores individuales
-        }
-        return palabras; 
-    }
-
-    borrar(palabra) {
-        if (!this.buscar(palabra)) {
-            return false; // Si la palabra no existe, no se puede eliminar
-        }
-        this.borrarDesde(this.root, palabra, 0);
-    }
-
-    borrarDesde(nodo, palabra, indice) {
-        if (indice === palabra.length) {
-            nodo.endWord = false; // Marca el final de la palabra como falso
-            return Object.keys(nodo.children).length === 0; // Retorna true si no hay children
-        }
-        const caracter = palabra[indice];
-        const hijo = nodo.children[caracter];
-        if (!hijo) {
-            return false; // La palabra no existe
-        }
-        const debeBorrarHijo = this.borrarDesde(hijo, palabra, indice + 1); //Lamada recursiva para borrar el hijo
-        if (debeBorrarHijo) {
-            delete nodo.children[caracter]; // Elimina el hijo
-            return Object.keys(nodo.children).length === 0; // Retorna true si no hay children
-        }
-        return false;
-    }
-
 }
