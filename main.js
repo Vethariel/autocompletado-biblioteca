@@ -16,39 +16,44 @@
 // 0. Referencias DOM ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const $file        = document.getElementById('file');
+const $file = document.getElementById('file');
 const $progressBar = document.getElementById('bar');
-const $status      = document.getElementById('status');
-const $search      = document.getElementById('search');
-const $results     = document.getElementById('suggestions');
+const $search = document.getElementById('search');
+const $results = document.getElementById('suggestions');
 
 ////////////////////////////////////////////////////////////////////////////////
 // 1. Worker & canal de mensajes ///////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const worker = new Worker('indexer.js');
+const worker = new Worker('indexer.js', { type: 'module' });
 
+// Al seleccionar archivo, envía al worker
 $file.addEventListener('change', () => {
   const file = $file.files[0];
   if (!file) return;
-  $status.textContent = `Indexando «${file.name}»…`;
-  $progressBar.value = 0;
+  // notifica a la interfaz (botón → barra progreso)
+  window.postMessage({ type: 'progress', percent: 0 }, '*');
   worker.postMessage({ cmd: 'index', file });
 });
 
+// Mensajes que regresan del worker
 worker.onmessage = (e) => {
   const { cmd } = e.data;
   if (cmd === 'progress') {
-    $progressBar.value = e.data.percent;
-    $status.textContent = `Indexando… ${e.data.percent}%`;
+    const percent = e.data.percent;
+    $progressBar.value = percent;
+    window.postMessage({ type: 'progress', percent }, '*');
   }
   else if (cmd === 'ready') {
-    $status.textContent = 'Índice listo ✅';
+    // habilita buscador
     $search.disabled = false;
+    $search.style.opacity = 1;
     $search.focus();
+    window.postMessage({ type: 'ready' }, '*');
   }
   else if (cmd === 'results') {
     renderResults(e.data.results);
+    window.postMessage({ type: 'results', list: e.data.results }, '*');
   }
 };
 
@@ -62,7 +67,9 @@ $search.addEventListener('input', () => {
   debounceTimer = setTimeout(() => {
     const q = $search.value.trim();
     if (!q) {
+      $results.style.display = 'none';
       $results.innerHTML = '';
+      window.postMessage({ type: 'results', list: [] }, '*');
       return;
     }
     worker.postMessage({ cmd: 'query', q, k: 10 });
@@ -74,13 +81,19 @@ $search.addEventListener('input', () => {
 ////////////////////////////////////////////////////////////////////////////////
 
 function renderResults(arr) {
+  if (!arr.length) {
+    $results.style.display = 'none';
+    $results.innerHTML = '';
+    return;
+  }
   $results.innerHTML = '';
   for (const { title, authors, hits, clusterId } of arr) {
     const li = document.createElement('li');
-    li.textContent = `${title} — ${authors ?? 'Autor desconocido'}  (${hits} búsq.)`;
+    li.textContent = `${title} — ${authors ?? 'Autor desconocido'}`;
     li.dataset.cid = clusterId;
     $results.appendChild(li);
   }
+  $results.style.display = 'block';
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,4 +109,6 @@ $results.addEventListener('click', (e) => {
     // feedback inmediato en UI
     li.style.fontWeight = 'bold';
   }
+  // ocultar dropdown tras selección (opcional UX)
+  $results.style.display = 'none';
 });
