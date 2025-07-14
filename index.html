@@ -1,159 +1,190 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Librarian – Autocompletado de Biblioteca</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --black: #000;
-      --white: #fff;
-      --gray: #e5e5e5;
-      --font-display: 'Playfair Display', serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--white);
-      color: var(--black);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-    /* --- Branding --- */
-    #logo {
-      width: 120px;
-      margin-bottom: 1rem;
-    }
-    #title {
-      font-family: var(--font-display);
-      font-size: 4rem;
-      letter-spacing: 0.05rem;
-      margin-bottom: 3rem;
-    }
-    /* --- Buttons --- */
-    .btn-primary {
-      background: var(--black);
-      color: var(--white);
-      border: none;
-      padding: 1rem 3rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-primary:hover { background: #222; }
-    .btn-secondary {
-      position: absolute;
-      top: 1.5rem; right: 1.5rem;
-      background: var(--gray);
-      color: var(--black);
-      border: none;
-      padding: 0.6rem 1.5rem;
-      cursor: default;
-      user-select: none;
-      font-size: 0.9rem;
-    }
-    .btn-secondary.enabled {
-      background: var(--black);
-      color: var(--white);
-      cursor: pointer;
-    }
-    /* --- Progress --- */
-    #bar { width: 280px; height: 6px; margin-top: 1rem; display: none; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Librarian – Autocompletado de Biblioteca</title>
+    <!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">  
+<style>
+        :root {
+            --black: #000;
+            --white: #fff;
+            --gray: #e5e5e5;
+            --font-display: 'Cinzel', serif;
+        }
 
-    /* --- Search --- */
-    #search {
-      width: 70vw;
-      max-width: 900px;
-      padding: 0.9rem 1rem;
-      font-size: 1.1rem;
-      border: 2px solid var(--black);
-      outline: none;
-      transition: opacity 0.3s;
-    }
-    #search[disabled] {
-      opacity: 0;
-      pointer-events: none;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    /* --- Suggestions --- */
-    #suggestions {
-      width: 70vw;
-      max-width: 900px;
-      list-style: none;
-      border: 2px solid var(--black);
-      border-top: none;
-      max-height: 300px;
-      overflow-y: auto;
-      display: none;
-    }
-    #suggestions li {
-      padding: 0.8rem 1rem;
-      background: var(--white);
-      border-top: 1px solid var(--gray);
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    #suggestions li:hover { background: var(--gray); }
-  </style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* --- Branding --- */
+        #logo {
+            width: 120px;
+            margin-bottom: 1rem;
+        }
+
+        #title {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            letter-spacing: 0.05rem;
+            margin-bottom: 3rem;
+        }
+
+        /* --- Buttons --- */
+        .btn-primary {
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #222;
+        }
+
+        .btn-secondary {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--gray);
+            color: var(--black);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            cursor: default;
+            user-select: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary.enabled {
+            background: var(--black);
+            color: var(--white);
+            cursor: pointer;
+        }
+
+        /* --- Progress --- */
+        #bar {
+            width: 280px;
+            height: 6px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* --- Search --- */
+        #search {
+            width: 70vw;
+            max-width: 900px;
+            padding: 0.9rem 1rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--black);
+            outline: none;
+            transition: opacity 0.3s;
+        }
+
+        #search[disabled] {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- Suggestions --- */
+        #suggestions {
+            width: 70vw;
+            max-width: 900px;
+            list-style: none;
+            border: 2px solid var(--black);
+            border-top: none;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #suggestions li {
+            padding: 0.8rem 1rem;
+            background: var(--white);
+            border-top: 1px solid var(--gray);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        #suggestions li:hover {
+            background: var(--gray);
+        }
+    </style>
 </head>
+
 <body>
-  <!-- Top secondary button (appears after carga) -->
-  <button id="loadBtnTop" class="btn-secondary" style="display:none">CARGAR CSV</button>
+    <!-- Top secondary button (appears after carga) -->
+    <button id="loadBtnTop" class="btn-secondary" style="display:none">CARGAR CSV</button>
 
-  <!-- Branding -->
-  <img id="logo" src="https://raw.githubusercontent.com/feathericons/feather/master/icons/book.svg" alt="Libro" />
-  <h1 id="title">LIBRARIAN</h1>
+    <!-- Branding -->
+    <img id="logo" src="https://raw.githubusercontent.com/feathericons/feather/master/icons/book.svg" alt="Libro" />
+    <h1 id="title">LIBRARIAN</h1>
 
-  <!-- Bloque inicial: botón y barra progreso -->
-  <input id="file" type="file" accept=".csv,.json" style="display:none" />
-  <button id="loadBtn" class="btn-primary">CARGAR CSV</button>
-  <progress id="bar" value="0" max="100"></progress>
+    <!-- Bloque inicial: botón y barra progreso -->
+    <input id="file" type="file" accept=".csv,.json" style="display:none" />
+    <button id="loadBtn" class="btn-primary">CARGAR CSV</button>
+    <progress id="bar" value="0" max="100"></progress>
 
-  <!-- Buscador y sugerencias -->
-  <input id="search" placeholder="Escribe para empezar a buscar…" disabled />
-  <ul id="suggestions"></ul>
+    <!-- Buscador y sugerencias -->
+    <input id="search" placeholder="Escribe para empezar a buscar…" disabled />
+    <ul id="suggestions"></ul>
 
-  <!-- Scripts -->
-  <script type="module" src="main.js"></script>
-  <script>
-    // Alias rápidos a elementos DOM
-    const fileInput   = document.getElementById('file');
-    const loadBtn     = document.getElementById('loadBtn');
-    const loadBtnTop  = document.getElementById('loadBtnTop');
-    const bar         = document.getElementById('bar');
-    const searchInput = document.getElementById('search');
-    const suggestions = document.getElementById('suggestions');
+    <!-- Scripts -->
+    <script type="module" src="main.js"></script>
+    <script>
+        // Alias rápidos a elementos DOM
+        const fileInput = document.getElementById('file');
+        const loadBtn = document.getElementById('loadBtn');
+        const loadBtnTop = document.getElementById('loadBtnTop');
+        const bar = document.getElementById('bar');
+        const searchInput = document.getElementById('search');
+        const suggestions = document.getElementById('suggestions');
 
-    // Conectar botón principal con input file
-    loadBtn.addEventListener('click', () => fileInput.click());
-    loadBtnTop.addEventListener('click', () => fileInput.click());
+        // Conectar botón principal con input file
+        loadBtn.addEventListener('click', () => fileInput.click());
+        loadBtnTop.addEventListener('click', () => fileInput.click());
 
-    // Escucha eventos enviados por main.js
-    window.addEventListener('message', (ev) => {
-      const { type, percent } = ev.data || {};
-      switch (type) {
-        case 'progress':
-          bar.style.display = 'block';
-          bar.value = percent;
-          break;
-        case 'ready':
-          // UI: ocultar botón, progreso; mostrar buscador
-          loadBtn.style.display = 'none';
-          bar.style.display = 'none';
-          searchInput.disabled = false;
-          loadBtnTop.style.display = 'block';
-          loadBtnTop.classList.remove('enabled');
-          break;
-        case 'results':
-          suggestions.style.display = ev.data.list.length ? 'block' : 'none';
-          break;
-      }
-    }, false);
-  </script>
+        // Escucha eventos enviados por main.js
+        window.addEventListener('message', (ev) => {
+            const { type, percent } = ev.data || {};
+            switch (type) {
+                case 'progress':
+                    bar.style.display = 'block';
+                    bar.value = percent;
+                    break;
+                case 'ready':
+                    // UI: ocultar botón, progreso; mostrar buscador
+                    loadBtn.style.display = 'none';
+                    bar.style.display = 'none';
+                    searchInput.disabled = false;
+                    loadBtnTop.style.display = 'block';
+                    loadBtnTop.classList.remove('enabled');
+                    break;
+                case 'results':
+                    suggestions.style.display = ev.data.list.length ? 'block' : 'none';
+                    break;
+            }
+        }, false);
+    </script>
 </body>
+
 </html>
