@@ -32,6 +32,7 @@ class Trie {
 
     // Buscar un token en el trie
     search(token) {
+      
       let node= this.root;
       for (const ch of token) {
           if (!node.children.has(ch)) {
@@ -44,7 +45,8 @@ class Trie {
 
     searchPrefix(prefix){
 
-      //Encuentra el nodo que representa el prefijo
+
+      //Encuentra el nodo que representa el prefijo (DFS)
       let node= this.root;
       for (const ch of prefix){
         if (!node.children.has(ch)) return new Set(); // Si no existe el prefijo, retorna un Set vacío

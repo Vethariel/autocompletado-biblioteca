@@ -5,8 +5,11 @@
     • Trie (árbol de prefijos) con posting‑lists por clusterId
     • Union–Find para agrupar ediciones (clusterId)
     • HashMap (Map JS) id → metadatos (solo en el worker)
-    • Max‑Heap (top‑k) para ranking de resultados
+    • Min‑Heap (top‑k) para ranking de resultados
+    • Set (Set JS) para intersecciones de clusters
+    • stack (Array JS) para DFS en Trie
 */
+import {MinHeap, Trie, UnionFind, AVLTree} from './structures';
 
 ////////////////////////////////////////////////////////////////////////////////
 // 0. Utilidades de normalización y CSV ////////////////////////////////////////

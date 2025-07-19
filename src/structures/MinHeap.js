@@ -44,7 +44,7 @@ class MinHeap {
     return res.reverse(); // invierte el orden del MinHeap
   }
 
-  // Reajusta el heap hacia elementsiba desde el índice idx
+  // Reajusta el heap hacia arriba desde el índice idx
   // para mantener la propiedad del MinHeap.
 
   siftUp(idx) {
