@@ -49,23 +49,23 @@ export default class Trie {
     //Encuentra el nodo que representa el prefijo
     let node = this.root;
     for (const ch of prefix) {
-      if (!node.children.has(ch)) return new Set(); // Si no existe el prefijo, retorna un Set vacío
-
-      // recorrer todos los nodos hijos del nodo que representa el prefijo
-      let result = new Set();
-      let stack = [node.children.get(ch)];
-
-      while (stack.length > 0) {
-        let current = stack.pop();
-        if (current.endWord) {
-
-          //agrega los clusterIds del nodo actual al resultado
-          for (const cid of current.posting.keys()) result.add(cid);
-        }
-        // Añadimos todos los hijos a la pila
-        for (const child of current.children.values()) stack.push(child);
-      }
-      return result; // Retorna un Set con todos los clusterIds encontrados
+      node = node.children.get(ch)
+      if (!node) return new Set(); // Si no existe el prefijo, retorna un Set vacío
     }
+    // recorrer todos los nodos hijos del nodo que representa el prefijo
+    let result = new Set();
+    let stack = [node];
+
+    while (stack.length > 0) {
+      let current = stack.pop();
+      if (current.endWord) {
+
+        //agrega los clusterIds del nodo actual al resultado
+        for (const cid of current.posting.keys()) result.add(cid);
+      }
+      // Añadimos todos los hijos a la pila
+      for (const child of current.children.values()) stack.push(child);
+    }
+    return result; // Retorna un Set con todos los clusterIds encontrados
   }
 }
