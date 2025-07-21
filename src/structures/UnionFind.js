@@ -1,4 +1,4 @@
-class UnionFind {
+export default class UnionFind {
   constructor(size) {
     this.parent = new Int32Array(size);
     this.rank   = new Int8Array(size);

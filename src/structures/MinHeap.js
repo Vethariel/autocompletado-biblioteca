@@ -1,4 +1,4 @@
-class MinHeap {
+export default class MinHeap {
 
     // Implementacion de un MinHeap con un tamaño máximo k.
     // Permite mantener los elements con mayor cantidad de

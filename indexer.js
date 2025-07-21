@@ -60,7 +60,8 @@ function parseCSVLine(line) {
 // 1. Estructuras de datos //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-import {MinHeap, Trie, UnionFind, AVLTree} from './structures';
+import  {UnionFind, MinHeap, Trie} from './src/structures/index.js';
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // 2. Variables globales del trabajador ////////////////////////////////////////
@@ -77,20 +78,16 @@ let currentLineId = 0;                   // para unionfind cuando book_id no es 
 // 3. Inserción en Trie /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function trieInsert(token, clusterId, bookId) {
-  trie.insert(token, data);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // 4. Índice de búsqueda ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function lookupWordExact(token) {
-  return trie.search(token); // Devuelve el Map<clusterId, data> o undefined
-}
 
-function lookupPrefixCompletions(prefix) {
-  return trie.autocomplete(prefix);
+function aggregatedHitsFor(clusterId) {
+  // Simple: contamos hits del primer nodo donde aparezca (podría mejorarse)
+  // Aquí guardamos un map auxiliar clusterId->hits acumulados
+  return clusterHits.get(clusterId) || 0;
 }
 
 const clusterHits = new Map();           // cache hits acumulados
@@ -112,13 +109,13 @@ function handleQuery(q, k=10) {
   // tokens completos exactos
   for (const tok of parts) {
     if (!tok) continue;
-    const node = lookupWordExact(tok);
+    const node = trie.search(tok);
     if (!node) return [];
     sets.push(new Set(node.posting.keys()));
   }
 
   // prefijo
-  if (prefix) sets.push(lookupPrefixCompletions(prefix));
+  if (prefix) sets.push(trie.autocomplete(prefix));
   if (sets.length === 0) return [];
 
   // intersección progresiva (empieza por set más pequeño)
@@ -153,10 +150,10 @@ function lookupAnyEdition(clusterId) {
   // Ineficiente pero simple; optimiza guardando mapa clusterId -> repBookId
   if (clusterRep.has(clusterId)) return clusterRep.get(clusterId);
   // búsqueda lenta sólo la primera vez
-  const stack = [trie];
+  const stack = [trie.root];
   while (stack.length) {
     const n = stack.pop();
-    if (n.isWord && n.posting.has(clusterId)) {
+    if (n.endWord && n.posting.has(clusterId)) {
       const rec = n.posting.get(clusterId);
       const rep = rec.editions[0];
       clusterRep.set(clusterId, rep);
@@ -239,14 +236,8 @@ function processLines(lines) {
 
     const clusterId = uf.find(bookId);
     const tokens = Array.from(new Set(normTitle.split(' '))).filter(Boolean);
-    
-    for (const tok of tokens) trieInsert(tok, clusterId, bookId);
+    for (const tok of tokens) trie.insert(tok, clusterId, bookId);
 
     id2meta.set(bookId, { titleOriginal: rawTitle, authors });
   }
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// 7. Exposed snapshot (opcional) //////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// No exportamos estructuras enormes; el worker responde queries internamente.
