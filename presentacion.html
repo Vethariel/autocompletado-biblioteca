@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: Librarian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo Minimalista Elegante con Tipografía y Animaciones */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        .presentation-container {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 5rem;
+            display: flex; /* Mantener flex para alinear contenido */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 1.5rem;
+            
+            /* --- Propiedades de la animación --- */
+            opacity: 0;
+            transform: scale(0.98);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            pointer-events: none; /* Evita interacción con diapositivas ocultas */
+        }
+        .slide.active {
+            /* --- Estado visible y activo de la animación --- */
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto; /* Permite interacción en la diapositiva activa */
+            z-index: 1; /* Asegura que la diapositiva activa esté al frente */
+        }
+        .main-title {
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #000000;
+        }
+        .slide-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #000000;
+            line-height: 1.2;
+        }
+        .slide-subtitle {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #6c757d;
+            margin-top: -1rem;
+        }
+        .integrantes {
+            margin-top: 2.5rem;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            width: 100%;
+        }
+        .integrante {
+            padding: 1rem 1.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+        }
+        .integrante-nombre {
+            font-weight: 700;
+            color: #212529;
+        }
+        .integrante-rol {
+            color: #6c757d;
+        }
+        .slide-content {
+            text-align: left;
+            width: 100%;
+            max-width: 850px;
+        }
+        .slide-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .slide-content li {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #000000;
+            font-size: 1.125rem;
+        }
+        code {
+            background-color: #e9ecef;
+            color: #000;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            border: 1px solid #dee2e6;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            text-align: left;
+        }
+        thead {
+            font-family: 'Cinzel', serif;
+            background-color: #f8f9fa;
+            color: #000;
+            font-weight: 700;
+        }
+        .navigation {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .nav-button {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #ffffff;
+            color: #212529;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #212529;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .nav-button:hover:not(:disabled) {
+            background-color: #212529;
+            color: #ffffff;
+        }
+        .nav-button:disabled {
+            background-color: #e9ecef;
+            color: #adb5bd;
+            border-color: #dee2e6;
+            cursor: not-allowed;
+        }
+        #slide-counter {
+            color: #6c757d;
+            font-size: 1rem;
+            min-width: 50px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <img src="https://raw.githubusercontent.com/Vethariel/autocompletado-biblioteca/refs/heads/main/pic/Book.png" alt="Logo de Librarian" class="h-32 w-auto mb-4">
+            <h1 class="main-title">LIBRARIAN</h1>
+            <p class="slide-subtitle">Búsqueda predictiva en tiempo real, 100% offline</p>
+            <div class="integrantes">
+                <div class="integrante">
+                    <p class="integrante-nombre">Daniel Felipe Loy Arias</p>
+                    <p class="integrante-rol">Estructuras & Parsing</p>
+                </div>
+                <div class="integrante">
+                    <p class="integrante-nombre">Julian David Benitez Martinez</p>
+                    <p class="integrante-rol">Dataset & Testing</p>
+                </div>
+                <div class="integrante">
+                    <p class="integrante-nombre">Daniel Alonso Gracia Pinto</p>
+                    <p class="integrante-rol">Interfaz & Documentación</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: El Reto -->
+        <div class="slide">
+            <h2 class="slide-title">El Reto</h2>
+            <div class="slide-content">
+                <ul>
+                    <li><strong>1,000,000+ de títulos</strong> (Goodreads) cargados localmente.</li>
+                    <li>Respuesta <strong>&lt; 50 ms</strong> para una sensación "instantánea".</li>
+                    <li>Evitar duplicados y ruido (múltiples ediciones de un mismo libro).</li>
+                    <li>Permitir dos modos de orden: <strong>"Más buscados"</strong> (popularidad) y <strong>A-Z</strong> al instante.</li>
+                    <li><strong>Sin servidor:</strong> todo corre en un <code>Web Worker</code> ⇢ cero latencia de red.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Idea de Alto Nivel -->
+        <div class="slide">
+            <h2 class="slide-title">Idea de Alto Nivel</h2>
+            <div class="slide-content text-lg space-y-4 text-left">
+                <p><strong>1. Carga:</strong> Usuario carga CSV ⇢ Barra de progreso en UI.</p>
+                <p><strong>2. Indexación:</strong> Worker normaliza, deduplica y crea un <strong>Índice Trie</strong>.</p>
+                <p><strong>3. Búsqueda:</strong> Usuario escribe ⇢ se envían tokens completos + prefijo actual.</p>
+                <p><strong>4. Candidatos:</strong> El Trie devuelve candidatos en <code>O(L)</code>.</p>
+                <p><strong>5. Ranking:</strong> Intersección rápida de resultados + <strong>Heap</strong> para obtener el top-10.</p>
+                <p><strong>6. Renderizado:</strong> Sugerencias se pintan en la UI en tiempo real.</p>
+                 <p><strong>7. Feedback:</strong> Clic en sugerencia ⇢ contador de popularidad ++.</p>
+            </div>
+        </div>
+        
+        <!-- Slide 4: Caja de Herramientas -->
+        <div class="slide">
+            <h2 class="slide-title">Caja de Herramientas</h2>
+            <div class="slide-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Estructura</th>
+                            <th>Rol</th>
+                            <th>Ventaja Clave</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Trie</strong></td><td>Índice de palabras</td><td>Búsqueda de prefijos <code>O(L)</code></td></tr>
+                        <tr><td><strong>Posting List</strong></td><td>Palabra → clusters</td><td>Ranking local sin reprocesar</td></tr>
+                        <tr><td><strong>Union-Find</strong></td><td>Agrupar ediciones</td><td>Fusión casi constante <code>α(n)</code></td></tr>
+                        <tr><td><strong>Min-Heap</strong></td><td>Top-k por popularidad</td><td><code>O(N log k)</code> vs <code>O(N log N)</code></td></tr>
+                        <tr><td><strong>AVL Tree</strong></td><td>Vista alfabética</td><td>Orden A-Z en <code>O(log k)</code></td></tr>
+                        <tr><td><strong>Hash Map</strong></td><td><code>bookId</code> → metadatos</td><td>Acceso <code>O(1)</code> para la UI</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 5: Flujo Técnico Detallado -->
+        <div class="slide">
+            <h2 class="slide-title">Flujo Técnico</h2>
+            <div class="slide-content">
+                <ol class="list-decimal list-inside text-lg space-y-1 text-left">
+                    <li>Carga de CSV por <i>streams</i> en chunks de 20 KB.</li>
+                    <li><code>normalize()</code> quita tildes, signos y pasa a minúsculas.</li>
+                    <li><code>UnionFind.union()</code> agrupa ediciones bajo un <code>clusterId</code> único.</li>
+                    <li><code>trieInsert(token, clusterId)</code> con contador <code>hits = 0</code>.</li>
+                    <li>Búsqueda con <code>lookupWordExact</code> y <code>lookupPrefixCompletions</code>.</li>
+                    <li>Intersección de conjuntos (<code>Set ∩ Set</code>) → universo de candidatos.</li>
+                    <li><code>Heap.push(-hits, clusterId)</code> preserva el top-10 de popularidad.</li>
+                    <li>UI rescata metadatos del cluster en <code>O(1)</code> y pinta la lista.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 6: Resultados de Rendimiento -->
+        <div class="slide">
+            <h2 class="slide-title">Rendimiento</h2>
+            <div class="slide-content flex items-center gap-12">
+                <div class="w-1/2 text-left space-y-4">
+                    <p class="text-xl border-l-2 border-black pl-4"><code>lookupWordExact</code>: <strong>0.01 ms</strong> promedio.</p>
+                    <p class="text-xl border-l-2 border-black pl-4"><code>lookupPrefixCompletions</code>: <strong>15 ms</strong> peor caso (1M títulos).</p>
+                    <p class="text-xl border-l-2 border-black pl-4"><strong>10x más rápido</strong> que <code>array.filter()</code>.</p>
+                </div>
+                <div class="w-1/2 h-64 bg-white p-4 flex items-end gap-6" aria-label="Gráfica de barras de rendimiento">
+                    <div class="flex-1 h-full flex flex-col justify-end items-center">
+                        <div class="bg-gray-300 w-3/4" style="height: 95%;"></div>
+                        <p class="text-sm mt-2 text-gray-600">Array.filter</p>
+                    </div>
+                    <div class="flex-1 h-full flex flex-col justify-end items-center">
+                        <div class="bg-black w-3/4" style="height: 10%;"></div>
+                        <p class="text-sm mt-2 text-gray-600">Nuestro Trie</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Valor para el Usuario -->
+        <div class="slide">
+            <h2 class="slide-title">Valor para el Usuario</h2>
+            <div class="slide-content">
+                <ul>
+                    <li>Experiencia "Google-like" <strong>sin servidores caros</strong>.</li>
+                    <li><strong>Escalabilidad eficiente:</strong> tiempo de búsqueda no crece linealmente.</li>
+                    <li>Modo <strong>100% offline</strong>, ideal para PWAs y entornos sin conexión.</li>
+                    <li><strong>Arquitectura modular</strong> para futuras mejoras (stemming, sinónimos).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Camino Futuro -->
+        <div class="slide">
+            <h2 class="slide-title">Camino Futuro</h2>
+            <div class="slide-content">
+                <ul class="grid grid-cols-2 gap-4">
+                    <li>Compresión <strong>Patricia Trie</strong> ⇢ -30% memoria.</li>
+                    <li>Persistir popularidad en <strong>IndexedDB</strong>.</li>
+                    <li><strong>API REST</strong> opcional para catálogos remotos.</li>
+                    <li>Tema oscuro y accesibilidad <strong>WCAG AA</strong>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Demo en Vivo -->
+        <div class="slide">
+            <h1 class="slide-title">Demo en Vivo</h1>
+            <div class="text-2xl text-gray-700 space-y-3">
+                <p>1. Carga de CSV (mostrar barra de progreso).</p>
+                <p>2. Escribir "don qui" ⇢ sugerencias instantáneas.</p>
+                <p>3. Alternar A-Z / Popularidad.</p>
+                <p>4. Clic ⇢ mostrar ediciones unificadas.</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Preguntas -->
+        <div class="slide">
+            <h1 class="slide-title">¿Preguntas?</h1>
+            <p class="slide-subtitle mt-8">Repositorio abierto en GitHub:</p>
+            <a href="https://github.com/Vethariel/autocompletado-biblioteca" target="_blank" class="text-xl text-black hover:underline transition-colors">
+                <code>github.com/Vethariel/autocompletado-biblioteca</code>
+            </a>
+            <p class="absolute bottom-20 text-4xl font-bold font-cinzel">¡Gracias!</p>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button id="prev-button" class="nav-button">Anterior</button>
+        <span id="slide-counter"></span>
+        <button id="next-button" class="nav-button">Siguiente</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevButton = document.getElementById('prev-button');
+            const nextButton = document.getElementById('next-button');
+            const slideCounter = document.getElementById('slide-counter');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach((slide) => {
+                    slide.classList.remove('active');
+                });
+                slides[index].classList.add('active');
+                slideCounter.textContent = `${index + 1} / ${slides.length}`;
+                prevButton.disabled = index === 0;
+                nextButton.disabled = index === slides.length - 1;
+            }
+
+            function showNextSlide() {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            }
+
+            function showPrevSlide() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            }
+
+            nextButton.addEventListener('click', showNextSlide);
+            prevButton.addEventListener('click', showPrevSlide);
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') showNextSlide();
+                else if (e.key === 'ArrowLeft') showPrevSlide();
+            });
+
+            showSlide(currentSlide);
+        });
+    </script>
+
+</body>
+</html>
