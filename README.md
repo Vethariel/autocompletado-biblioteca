@@ -33,7 +33,7 @@ Ideal para bibliotecas digitales, catálogos en línea o cualquier proyecto que 
 
 1. **Clona el repositorio**
    ```bash
-   git clone https://github.com/tu-usuario/autocompletado-biblioteca.git
+   git clone https://github.com/Vethariel/autocompletado-biblioteca.git
    cd autocompletado-biblioteca
    ```
 2. **Levanta un servidor local** (para evitar restricciones de CORS en archivos locales):
