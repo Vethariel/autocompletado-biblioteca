@@ -72,7 +72,7 @@ $search.addEventListener('input', () => {
       window.postMessage({ type: 'results', list: [] }, '*');
       return;
     }
-    worker.postMessage({ cmd: 'query', q, k: 10 });
+    worker.postMessage({ cmd: 'query', q, k: 100 });
   }, 150);
 });
 
@@ -86,14 +86,15 @@ function renderResults(arr) {
     $results.innerHTML = '';
     return;
   }
+  const topToShow = arr.slice(0, 10);
   $results.innerHTML = '';
-  for (const { title, authors, hits, clusterId } of arr) {
+  topToShow.forEach(({ title, authors, hits, clusterId }) => {
     const li = document.createElement('li');
-    li.textContent = `${title} — ${authors ?? 'Autor desconocido'}`;
+    li.textContent = `${title} (${hits}) — ${authors ?? 'Autor desconocido'}`;
     li.dataset.cid = clusterId;
     $results.appendChild(li);
-  }
-  $results.style.display = 'block';
+  });
+  $results.style.display = topToShow.length ? 'block' : 'none';
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -16,8 +16,8 @@
 
 // RegEx pre‑compiladas
 const RE_DIACRITICS = /[\u0300-\u036f]/g;      // marcas de acento
-const RE_NON_ALNUM  = /[^a-z0-9\s]/g;          // quitar puntuación
-const RE_SPACES     = /\s+/g;                  // colapsar espacios
+const RE_NON_ALNUM = /[^a-z0-9\s]/g;          // quitar puntuación
+const RE_SPACES = /\s+/g;                  // colapsar espacios
 
 /**
  * Convierte un string a clave de buscador: lower, sin tildes, sin signos.
@@ -43,7 +43,7 @@ function parseCSVLine(line) {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') {        // toggle quote mode (doble doble = escapado)
-      if (i+1 < line.length && line[i+1] === '"') { current += '"'; i++; }
+      if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; }
       else inQuotes = !inQuotes;
     } else if (ch === ',' && !inQuotes) {
       parts.push(current);
@@ -60,7 +60,7 @@ function parseCSVLine(line) {
 // 1. Estructuras de datos //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-import  {UnionFind, MinHeap, Trie} from './src/structures/index.js';
+import { UnionFind, MinHeap, Trie } from './src/structures/index.js';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ import  {UnionFind, MinHeap, Trie} from './src/structures/index.js';
 
 const trie = new Trie();
 const MAX_LINES = 1_500_000;             // to pre‑size UF (aprox Goodreads)
-const uf   = new UnionFind(MAX_LINES);
+const uf = new UnionFind(MAX_LINES);
 const id2meta = new Map();               // bookId -> {titleOriginal, authors}
 const titleKey2id = new Map();           // clave duplicados -> bookId
 let currentLineId = 0;                   // para unionfind cuando book_id no es consecutivo
@@ -92,15 +92,15 @@ function aggregatedHitsFor(clusterId) {
 
 const clusterHits = new Map();           // cache hits acumulados
 
-function incrementHits(clusterId, delta=1) {
-  clusterHits.set(clusterId, (clusterHits.get(clusterId)||0)+delta);
+function incrementHits(clusterId, delta = 1) {
+  clusterHits.set(clusterId, (clusterHits.get(clusterId) || 0) + delta);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // 5. Procesamiento de consulta ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function handleQuery(q, k=10) {
+function handleQuery(q, k = 10) {
   const parts = normalize(q).split(' ');
   if (parts.length === 0) return [];
   const prefix = parts.pop();
@@ -119,9 +119,9 @@ function handleQuery(q, k=10) {
   if (sets.length === 0) return [];
 
   // intersección progresiva (empieza por set más pequeño)
-  sets.sort((a,b)=>a.size-b.size);
+  sets.sort((a, b) => a.size - b.size);
   let intersect = sets[0];
-  for (let i=1;i<sets.length && intersect.size;i++) {
+  for (let i = 1; i < sets.length && intersect.size; i++) {
     const next = new Set();
     for (const cid of intersect) if (sets[i].has(cid)) next.add(cid);
     intersect = next;
@@ -131,11 +131,14 @@ function handleQuery(q, k=10) {
   // ranking con heap (min‑heap guardando los top‑k mayores hits)
   const heap = new MinHeap(k);
   for (const cid of intersect) {
-    const hits = clusterHits.get(cid)||0;
-    heap.push([ -hits, cid ]);   // negativo: heap min sobre hits inverso → top hits
+    const hits = clusterHits.get(cid) || 0;
+    heap.push([-hits, cid]);   // negativo: heap min sobre hits inverso → top hits
   }
-  const ranked = heap.toSortedDesc().map(([negHits,cid])=>({clusterId:cid,hits:-negHits}));
-  
+  const ranked = heap.toSortedDesc().map(([negHits, cid]) => ({ clusterId: cid, hits: -negHits }));
+
+  ranked.reverse();
+
+
   // map to titles
   return ranked.map(obj => {
     const anyEdition = lookupAnyEdition(obj.clusterId);
@@ -178,7 +181,7 @@ self.onmessage = async (e) => {
   else if (cmd === 'query') {
     const { q, k } = e.data;
     const res = handleQuery(q, k);
-    self.postMessage({ cmd:'results', results: res });
+    self.postMessage({ cmd: 'results', results: res });
   }
   else if (cmd === 'clicked') {
     const { clusterId } = e.data;
@@ -199,18 +202,18 @@ async function indexFile(file) {
     if (done) break;
 
     bytesRead += value.byteLength;
-    let text = leftover + utf8decoder.decode(value, { stream:true });
+    let text = leftover + utf8decoder.decode(value, { stream: true });
     const lines = text.split(/\r?\n/);
     leftover = lines.pop();                      // posiblemente linea incompleta
-   
+
     processLines(lines);
 
     const percent = Math.round((bytesRead / file.size) * 100);
-    self.postMessage({cmd:'progress', percent});
+    self.postMessage({ cmd: 'progress', percent });
   }
 
   if (leftover) processLines([leftover]);
-  self.postMessage({cmd:'ready'});
+  self.postMessage({ cmd: 'ready' });
 }
 
 function processLines(lines) {
@@ -222,16 +225,31 @@ function processLines(lines) {
     const bookId = Number(cols[0]);
     const rawTitle = cols[1] || '';
     const authors = cols[2] || '';
+    const ratingsCount = Number(cols[8] || 0);
 
     if (!bookId || !rawTitle) continue;
 
     const normTitle = normalize(rawTitle);
     const key = authors.toLowerCase() + '|' + normTitle;
 
+    /* ------------ manejar duplicados ------------- */
     if (titleKey2id.has(key)) {
-      uf.union(bookId, titleKey2id.get(key));
+      const prevId = titleKey2id.get(key);      // edición previa
+      const rootPrev = uf.find(prevId);
+      const hitsPrev = clusterHits.get(rootPrev) || 0;
+
+      uf.union(bookId, prevId);                    // puede cambiar la raíz
+      const rootNow = uf.find(prevId);
+
+      // Escoge el mayor entre: hits previos, ratingsCount nuevo, hits que ya tuviera la raíz
+      const hitsNow = Math.max(hitsPrev, ratingsCount, clusterHits.get(rootNow) || 0);
+      clusterHits.set(rootNow, hitsNow);
+
+      if (rootNow !== rootPrev) clusterHits.delete(rootPrev); // limpia ID viejo
     } else {
       titleKey2id.set(key, bookId);
+      const clusterId = uf.find(bookId);
+      clusterHits.set(clusterId, ratingsCount);    // **inicializa** con ratings_count
     }
 
     const clusterId = uf.find(bookId);
