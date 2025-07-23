@@ -242,7 +242,6 @@
                         <tr><td><strong>Posting List</strong></td><td>Palabra → clusters</td><td>Ranking local sin reprocesar</td></tr>
                         <tr><td><strong>Union-Find</strong></td><td>Agrupar ediciones</td><td>Fusión casi constante <code>α(n)</code></td></tr>
                         <tr><td><strong>Min-Heap</strong></td><td>Top-k por popularidad</td><td><code>O(N log k)</code> vs <code>O(N log N)</code></td></tr>
-                        <tr><td><strong>AVL Tree</strong></td><td>Vista alfabética</td><td>Orden A-Z en <code>O(log k)</code></td></tr>
                         <tr><td><strong>Hash Map</strong></td><td><code>bookId</code> → metadatos</td><td>Acceso <code>O(1)</code> para la UI</td></tr>
                     </tbody>
                 </table>
@@ -253,7 +252,7 @@
         <div class="slide">
             <h2 class="slide-title">Flujo Técnico</h2>
             <div class="slide-content">
-                <ol class="list-decimal list-inside text-lg space-y-1 text-left">
+                <ol class="list-decimal list-inside text-lg space-y-0 text-left">
                     <li>Carga de CSV por <i>streams</i> en chunks de 20 KB.</li>
                     <li><code>normalize()</code> quita tildes, signos y pasa a minúsculas.</li>
                     <li><code>UnionFind.union()</code> agrupa ediciones bajo un <code>clusterId</code> único.</li>
