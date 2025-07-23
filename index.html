@@ -36,6 +36,41 @@
             flex-direction: column;
         }
 
+        body.ready #loadBtn {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        body.ready #logo {
+            transform: translateY(-120px);
+        }
+
+        body.ready #title {
+            transform: translateY(-120px);
+        }
+
+        body.ready #search {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        body.ready #searchWrap {
+            /* ← nuevo */
+            transform: translateY(-120px);
+        }
+
+        #searchWrap {
+            position: relative;
+            /* para que el dropdown se ancle */
+            transition: transform 0.6s ease;
+            /* suavidad igual a logo/título  */
+        }
+
+        body.ready #loadBtnTop {
+            background: var(--black);
+            color: var(--white);
+        }
+
         /* --- Branding --- */
         #logo {
             width: 180px;
@@ -110,6 +145,17 @@
             pointer-events: none;
         }
 
+        #logo,
+        #title,
+        #search {
+            transition: transform 0.6s ease, opacity 0.4s;
+        }
+
+        #search {
+            position: relative;
+            z-index: 2;
+        }
+
         /* --- Suggestions --- */
         #suggestions {
             width: 70vw;
@@ -119,7 +165,18 @@
             border-top: none;
             max-height: 300px;
             overflow-y: auto;
+
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+
+            transform-origin: top;
+            transform: scaleY(0);
+            transition: transform 0.25s ease;
+
             display: none;
+            /* se cambia a block desde JS */
         }
 
         #suggestions li {
@@ -132,6 +189,10 @@
 
         #suggestions li:hover {
             background: var(--gray);
+        }
+
+        #suggestions.show {
+            transform: scaleY(1);
         }
     </style>
 </head>
@@ -152,8 +213,10 @@
     <progress id="bar" value="0" max="100"></progress>
 
     <!-- Buscador y sugerencias -->
-    <input id="search" placeholder="Escribe para empezar a buscar…" disabled />
-    <ul id="suggestions"></ul>
+    <div id="searchWrap" style="position:relative; width:70vw; max-width:900px;">
+        <input id="search" placeholder="Escribe para empezar a buscar…" disabled />
+        <ul id="suggestions"></ul>
+    </div>
 
     <!-- Scripts -->
     <script type="module" src="main.js"></script>
@@ -166,11 +229,17 @@
         const searchInput = document.getElementById('search');
         const suggestions = document.getElementById('suggestions');
 
-        // Conectar botón principal con input file
-        loadBtn.addEventListener('click', () => fileInput.click());
-        loadBtnTop.addEventListener('click', () => fileInput.click());
+        // ---------- funciones de apoyo ----------
+        const openFileSelector = () => fileInput.click();
 
-        // Escucha eventos enviados por main.js
+        const resetApp = () => {
+            setTimeout(() => location.reload(), 150);
+        };
+
+        // ---------- listeners iniciales ----------
+        loadBtn.addEventListener('click', openFileSelector);
+        loadBtnTop.addEventListener('click', openFileSelector);
+
         window.addEventListener('message', (ev) => {
             const { type, percent } = ev.data || {};
             switch (type) {
@@ -178,14 +247,26 @@
                     bar.style.display = 'block';
                     bar.value = percent;
                     break;
+
                 case 'ready':
-                    // UI: ocultar botón, progreso; mostrar buscador
+                    /* UI estado listo */
                     loadBtn.style.display = 'none';
                     bar.style.display = 'none';
                     searchInput.disabled = false;
+
+                    /* cambia texto y habilita botón superior */
+                    loadBtnTop.textContent = 'REESTABLECER';
+                    loadBtnTop.classList.add('enabled');
                     loadBtnTop.style.display = 'block';
-                    loadBtnTop.classList.remove('enabled');
+
+                    /* ---- DESENGANCHAMOS evento antiguo ---- */
+                    loadBtnTop.removeEventListener('click', openFileSelector);
+                    /* ---- y enganchamos el nuevo ----       */
+                    loadBtnTop.addEventListener('click', resetApp, { once: true });
+
+                    document.body.classList.add('ready');
                     break;
+
                 case 'results':
                     suggestions.style.display = ev.data.list.length ? 'block' : 'none';
                     break;

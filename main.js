@@ -46,9 +46,12 @@ worker.onmessage = (e) => {
   }
   else if (cmd === 'ready') {
     // habilita buscador
+    document.body.classList.add('ready');          // activa animaciones
     $search.disabled = false;
-    $search.style.opacity = 1;
     $search.focus();
+    loadBtnTop.textContent = 'REESTABLECER';
+    loadBtnTop.style.display = 'block';
+    loadBtnTop.classList.add('enabled');
     window.postMessage({ type: 'ready' }, '*');
   }
   else if (cmd === 'results') {
@@ -81,20 +84,12 @@ $search.addEventListener('input', () => {
 ////////////////////////////////////////////////////////////////////////////////
 
 function renderResults(arr) {
-  if (!arr.length) {
-    $results.style.display = 'none';
-    $results.innerHTML = '';
-    return;
-  }
-  const topToShow = arr.slice(0, 10);
-  $results.innerHTML = '';
-  topToShow.forEach(({ title, authors, hits, clusterId }) => {
-    const li = document.createElement('li');
-    li.textContent = `${title} (${hits}) — ${authors ?? 'Autor desconocido'}`;
-    li.dataset.cid = clusterId;
-    $results.appendChild(li);
-  });
-  $results.style.display = topToShow.length ? 'block' : 'none';
+  const wrap = document.getElementById('suggestions');
+  if (!arr.length) { wrap.classList.remove('show'); return; }
+  wrap.innerHTML = arr.slice(0,10).map(({title,authors,hits,clusterId}) =>
+    `<li data-cid="${clusterId}">${title} (${hits}) — ${authors ?? 'Autor desconocido'}</li>`
+  ).join('');
+  wrap.classList.add('show');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -112,4 +107,21 @@ $results.addEventListener('click', (e) => {
   }
   // ocultar dropdown tras selección (opcional UX)
   $results.style.display = 'none';
+});
+
+
+// --------- hide dropdown cuando vacío / clic fuera ----------
+$search.addEventListener('blur', () => {
+  setTimeout(()=> document.getElementById('suggestions').classList.remove('show'), 150);
+});
+
+// --------- botón superior = restablecer ----------
+loadBtnTop.addEventListener('click', () => {
+  if (!document.body.classList.contains('ready')) { fileInput.click(); return; }
+  document.body.classList.remove('ready');
+  loadBtnTop.style.display = 'none';
+  $search.value = '';
+  document.getElementById('suggestions').innerHTML = '';
+  document.getElementById('suggestions').classList.remove('show');
+  location.reload();                              // refresco rápido con parpadeo
 });
