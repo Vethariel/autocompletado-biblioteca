@@ -75,7 +75,7 @@ $search.addEventListener('input', () => {
       window.postMessage({ type: 'results', list: [] }, '*');
       return;
     }
-    worker.postMessage({ cmd: 'query', q, k: 100 });
+    worker.postMessage({ cmd: 'query', q, k: 50 });
   }, 150);
 });
 
